@@ -1,44 +1,24 @@
-const readline = require("readline");
+const readlineSync = require("readline-sync");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-function askOperation() {
-  rl.question(
-    "What operation would you like to perform? (/, *, +, -): ",
-    (operation) => {
-      if (["/", "*", "+", "-"].includes(operation)) {
-        askFirstNumber(operation);
-      } else {
-        console.log("That is not a valid operation");
-        askOperation();
-      }
-    }
+function getOperation() {
+  const operation = readlineSync.question(
+    "What operation would you like to perform? (/, *, +, -): "
   );
+  if (["/", "*", "+", "-"].includes(operation)) {
+    return operation;
+  } else {
+    console.log("That is not a valid operation");
+    return getOperation();
+  }
 }
 
-function askFirstNumber(operation) {
-  rl.question("Please enter the first number: ", (firstNumber) => {
-    if (isNaN(firstNumber)) {
-      console.log("This is not a number");
-      askFirstNumber(operation);
-    } else {
-      askSecondNumber(operation, parseFloat(firstNumber));
-    }
-  });
-}
-
-function askSecondNumber(operation, firstNumber) {
-  rl.question("Please enter the second number: ", (secondNumber) => {
-    if (isNaN(secondNumber)) {
-      console.log("This is not a number");
-      askSecondNumber(operation, firstNumber);
-    } else {
-      performOperation(operation, firstNumber, parseFloat(secondNumber));
-    }
-  });
+function getNumber(message) {
+  const number = readlineSync.question(message);
+  if (isNaN(number)) {
+    console.log("This is not a number");
+    return getNumber(message);
+  }
+  return parseFloat(number);
 }
 
 function performOperation(operation, firstNumber, secondNumber) {
@@ -58,7 +38,13 @@ function performOperation(operation, firstNumber, secondNumber) {
       break;
   }
   console.log(`The result is: ${result}`);
-  rl.close();
 }
 
-askOperation();
+function main() {
+  const operation = getOperation();
+  const firstNumber = getNumber("Please enter the first number: ");
+  const secondNumber = getNumber("Please enter the second number: ");
+  performOperation(operation, firstNumber, secondNumber);
+}
+
+main();
